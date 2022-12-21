@@ -1,0 +1,30 @@
+{
+  "name": "sw-engineering-dc-bot",
+  "version": "1.0.0",
+  "description": "The discord bot for the software engineering Discord server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omeldar/sw-engineering-dc-bot.git"
+  },
+  "keywords": [
+    "Discord",
+    "Bot"
+  ],
+  "author": "Eldar Omerovic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omeldar/sw-engineering-dc-bot/issues"
+  },
+  "homepage": "https://github.com/omeldar/sw-engineering-dc-bot#readme",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
+    "nodemon": "^2.0.20"
+  }
+}
