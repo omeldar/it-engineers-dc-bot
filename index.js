@@ -1,5 +1,7 @@
 // require discord library
 const { Client, Collection, Partials, GatewayIntentBits} = require('discord.js');
+// require discordjs-reaction-role
+const { ReactionRole } = require("discordjs-reaction-role");
 // require dotenv to read out of config
 const dotenv = require('dotenv');
 // require fs to read from files
@@ -37,16 +39,20 @@ for (const file of commandFiles) {
 client.once('ready', () => {
     console.log("[Object object] NullReferenceException.");
 
-    client.users.fetch('289493369132941322').then((user) => {
+    client.users.fetch(process.env.DEVUSER_ID).then((user) => {
         devUser = user;
     });
 });
+
+// Add reaction role to a bot message
+// https://www.npmjs.com/package/discordjs-reaction-role
+
 
 // on message event handler
 client.on('messageCreate', message => {
     if(!`${message.content}`.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).split(/ +/);
+    const args = message.content.slice(prefix.length).split(/('.*?'|".*?"|\S+)/);
     const command = args.shift().toLowerCase();
 
     switch(command){
@@ -58,6 +64,9 @@ client.on('messageCreate', message => {
             break;
         case "info":
             client.commands.get('info').execute(message, args);
+            break;
+        case "say":
+            client.commands.get('say').execute(message, args);
             break;
         default:
             message.reply(`${command} ${args} `);

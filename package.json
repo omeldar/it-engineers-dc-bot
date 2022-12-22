@@ -23,6 +23,7 @@
   "homepage": "https://github.com/omeldar/sw-engineering-dc-bot#readme",
   "dependencies": {
     "discord.js": "^14.7.1",
+    "discordjs-reaction-role": "^3.1.0",
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "nodemon": "^2.0.20"
