@@ -1,5 +1,5 @@
 // require discord library
-const { Client, Collection, Partials, GatewayIntentBits} = require('discord.js');
+const { Client, Collection, Partials, GatewayIntentBits, REST, Routes} = require('discord.js');
 // require discordjs-reaction-role
 const { ReactionRole } = require("discordjs-reaction-role");
 // require dotenv to read out of config
@@ -16,6 +16,7 @@ const client = new Client({
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
 		GatewayIntentBits.GuildMembers,
 	],
     partials: [
@@ -24,9 +25,25 @@ const client = new Client({
         Partials.Reaction
     ]
 });
+const rrConfiguration = [
+    {
+        messageId: process.env.FIELD_ROLE_MESSAGE_ID,
+        reaction: "💚",
+        roleId: process.env.FIELD_ROLE_SYS_E,
+    },
+    {
+        messageId: process.env.FIELD_ROLE_MESSAGE_ID,
+        reaction: "💜",
+        roleId: process.env.FIELD_ROLE_SW_E,
+    }
+];
+
+const manager = new ReactionRole(client, rrConfiguration);
+
+const rest = new REST({ version: '10'}).setToken(process.env.BOTTOKEN);
 
 // Command prefix
-const prefix = '-';
+const prefix = '/';
 client.commands = new Collection();
 
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
@@ -36,23 +53,34 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+(async() => {
+    try{
+        console.log("Started refreshing application / commands.");
+        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {body: client.commands});
+        console.log('Successfully reloaded application / commands.');
+    } catch (err){
+        console.log('Failed reloading application / commands.');
+        console.error(err);
+    }
+})();
+
 client.once('ready', () => {
-    console.log("[Object object] NullReferenceException.");
+    console.log("[Object object] running.");
 
     client.users.fetch(process.env.DEVUSER_ID).then((user) => {
         devUser = user;
     });
 });
 
-// Add reaction role to a bot message
-// https://www.npmjs.com/package/discordjs-reaction-role
-
-
 // on message event handler
 client.on('messageCreate', message => {
+    if(message.content.includes("bot") && message.content.includes("trash")){
+        message.reply("Whats your problem?");
+    }
+
     if(!`${message.content}`.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).split(/('.*?'|".*?"|\S+)/);
+    const args = message.content.slice(prefix.length).split(/('.*?'|".*?"|\S+)/).filter(s => s != ' ' && s != '');
     const command = args.shift().toLowerCase();
 
     switch(command){
@@ -69,7 +97,7 @@ client.on('messageCreate', message => {
             client.commands.get('say').execute(message, args);
             break;
         default:
-            message.reply(`${command} ${args} `);
+            message.reply(`No command ${command} with following ${args} found.`);
             break;
     }
 });
