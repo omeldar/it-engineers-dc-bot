@@ -1,5 +1,5 @@
 // require discord library
-const { Client, Collection, Partials, GatewayIntentBits, REST, Routes} = require('discord.js');
+const { Client, Collection, Partials, GatewayIntentBits } = require('discord.js');
 // require discordjs-reaction-role
 const { ReactionRole } = require("discordjs-reaction-role");
 // require dotenv to read out of config
@@ -26,6 +26,7 @@ const client = new Client({
     ]
 });
 const rrConfiguration = [
+    // for profession
     {
         messageId: process.env.FIELD_ROLE_MESSAGE_ID,
         reaction: "💚",
@@ -35,12 +36,31 @@ const rrConfiguration = [
         messageId: process.env.FIELD_ROLE_MESSAGE_ID,
         reaction: "💜",
         roleId: process.env.FIELD_ROLE_SW_E,
-    }
+    },
+    // for degree
+    {
+        messageId: process.env.FIELD_ROLE_DEGREE_MESSAGE_ID,
+        reaction: "💛",
+        roleId: process.env.FIELD_ROLE_APPRENTICE
+    },
+    {
+        messageId: process.env.FIELD_ROLE_DEGREE_MESSAGE_ID,
+        reaction: "🧡",
+        roleId: process.env.FIELD_ROLE_EFZDEGREE
+    },
+    {
+        messageId: process.env.FIELD_ROLE_DEGREE_MESSAGE_ID,
+        reaction: "💙",
+        roleId: process.env.FIELD_ROLE_BACHELORSTUDENT
+    },
+    {
+        messageId: process.env.FIELD_ROLE_DEGREE_MESSAGE_ID,
+        reaction: "🤍",
+        roleId: process.env.FIELD_ROLE_BACHELOR
+    },
 ];
 
 const manager = new ReactionRole(client, rrConfiguration);
-
-const rest = new REST({ version: '10'}).setToken(process.env.BOTTOKEN);
 
 // Command prefix
 const prefix = '/';
@@ -52,17 +72,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
-
-(async() => {
-    try{
-        console.log("Started refreshing application / commands.");
-        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {body: client.commands});
-        console.log('Successfully reloaded application / commands.');
-    } catch (err){
-        console.log('Failed reloading application / commands.');
-        console.error(err);
-    }
-})();
 
 client.once('ready', () => {
     console.log("[Object object] running.");
@@ -96,8 +105,11 @@ client.on('messageCreate', message => {
         case "say":
             client.commands.get('say').execute(message, args);
             break;
+        case "init":
+            client.commands.get('init').execute(message, args);
+            break;
         default:
-            message.reply(`No command ${command} with following ${args} found.`);
+            message.reply(`No command ${command} found.`);
             break;
     }
 });
