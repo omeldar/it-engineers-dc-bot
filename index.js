@@ -97,15 +97,13 @@ client.on('messageCreate', message => {
             client.commands.get('ping').execute(message, args);
             break;
         case "help":
-            client.commands.get('help').execute(message, args);
+            client.commands.get('help').execute(message, args, client.commands);
             break;
         case "info":
             client.commands.get('info').execute(message, args);
             break;
-        case "say":
-            client.commands.get('say').execute(message, args);
-            break;
         case "init":
+            if(!message.author.roles.find(role => role.name == 'Administrator')) break;
             client.commands.get('init').execute(message, args);
             break;
         default:
